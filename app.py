@@ -4,23 +4,12 @@ Automatically fetches the lowest dealer price from Carzone.ie REST API
 """
 
 from flask import Flask, render_template, jsonify, request
-import cloudscraper
+from curl_cffi import requests as cf_requests
 import os
 
 app = Flask(__name__)
-scraper = cloudscraper.create_scraper(
-    browser={"browser": "chrome", "platform": "windows", "desktop": True},
-    delay=5,
-)
-
-def _warm_up_carzone():
-    """Visit the Carzone homepage to establish a Cloudflare-cleared session."""
-    try:
-        scraper.get("https://www.carzone.ie/", timeout=20)
-    except Exception:
-        pass
-
-_warm_up_carzone()
+# curl_cffi impersonates Chrome's exact TLS fingerprint â bypasses Cloudflare reliably
+session = cf_requests.Session(impersonate="chrome120")
 
 # ââ Carzone REST API ââââââââââââââââââââââââââââââââââââââââââ
 def get_lowest_carzone_price(make, model, year, max_mileage):
@@ -49,11 +38,7 @@ def get_lowest_carzone_price(make, model, year, max_mileage):
     }
 
     try:
-        resp = scraper.get(api_url, params=params, headers=headers, timeout=20)
-        if resp.status_code == 403:
-            # CF blocked â re-warm and retry once
-            _warm_up_carzone()
-            resp = scraper.get(api_url, params=params, headers=headers, timeout=20)
+        resp = session.get(api_url, params=params, headers=headers, timeout=20)
         if resp.status_code != 200:
             return None, search_url, f"Carzone returned status {resp.status_code}"
         try:
