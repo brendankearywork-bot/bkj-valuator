@@ -11,10 +11,15 @@ app = Flask(__name__)
 # curl_cffi impersonates Chrome's exact TLS fingerprint â bypasses Cloudflare reliably
 session = cf_requests.Session(impersonate="chrome120")
 
+# If set, requests are routed through a Cloudflare Worker proxy to bypass IP-level blocking.
+# Set CARZONE_PROXY_URL on Render to e.g. https://bkj-proxy.YOUR-SUBDOMAIN.workers.dev
+CARZONE_PROXY_URL = os.environ.get("CARZONE_PROXY_URL", "")
+CARZONE_DIRECT_URL = "https://www.carzone.ie/rest/1.0/Car/stock"
+
 # ââ Carzone REST API ââââââââââââââââââââââââââââââââââââââââââ
 def get_lowest_carzone_price(make, model, year, max_mileage):
     """Call Carzone's internal REST API to get the cheapest dealer listing."""
-    api_url = "https://www.carzone.ie/rest/1.0/Car/stock"
+    api_url = CARZONE_PROXY_URL if CARZONE_PROXY_URL else CARZONE_DIRECT_URL
     params = {
         "make": make,
         "model": model,
