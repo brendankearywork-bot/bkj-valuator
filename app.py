@@ -29,9 +29,22 @@ def get_lowest_carzone_price(make, model, year, max_mileage):
         f"&maxMileage={max_mileage}&sellerType=Trade&sort=PriceAsc"
     )
 
+    headers = {
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "en-IE,en;q=0.9",
+        "Referer": "https://www.carzone.ie/search",
+        "X-Requested-With": "XMLHttpRequest",
+    }
+
     try:
-        resp = scraper.get(api_url, params=params, timeout=15)
-        data = resp.json()
+        resp = scraper.get(api_url, params=params, headers=headers, timeout=15)
+        if resp.status_code != 200:
+            return None, search_url, f"Carzone returned status {resp.status_code}"
+        try:
+            data = resp.json()
+        except Exception:
+            snippet = resp.text[:120].replace('\n', ' ').strip()
+            return None, search_url, f"Carzone response not JSON (status {resp.status_code}): {snippet}"
     except Exception as e:
         return None, search_url, f"Could not reach Carzone: {str(e)}"
 
