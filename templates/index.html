@@ -34,3 +34,291 @@
     .card-body{padding:24px 20px 22px}
 
     /* Plate */
+    .plate-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}
+    .plate-wrapper{display:flex;justify-content:center;margin-bottom:22px}
+    .plate{display:inline-flex;align-items:stretch;border:3px solid #222;border-radius:9px;overflow:hidden;box-shadow:0 3px 12px rgba(0,0,0,.16);width:100%;max-width:380px}
+    .plate-eu{background:#003DA5;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 8px;min-width:40px;gap:3px;flex-shrink:0}
+    .plate-eu .irl{color:#fff;font-size:10px;font-weight:900}
+    .plate-eu .flag{width:22px;height:14px;display:grid;grid-template-columns:1fr 1fr 1fr;border-radius:2px;overflow:hidden}
+    .flag-green{background:#169B62}.flag-white{background:#fff}.flag-orange{background:#FF883E}
+    .plate-input-field{flex:1;border:none;outline:none;font-family:'Arial Black',Arial,sans-serif;font-size:28px;font-weight:900;letter-spacing:.06em;text-align:center;color:#111;background:#fff8e6;padding:12px 10px;text-transform:uppercase;caret-color:var(--pink)}
+    .plate-input-field::placeholder{color:#ccc;font-weight:400;font-size:17px;letter-spacing:.03em}
+
+    /* Fields */
+    .fields-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+    .field{display:flex;flex-direction:column}
+    .field label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:5px}
+    .field input,.field select{border:1.5px solid #e0e4ec;border-radius:9px;padding:10px 12px;font-size:15px;color:var(--text);outline:none;transition:border-color .2s;background:#fff;-webkit-appearance:none}
+    .field input:focus,.field select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(17,123,104,.1)}
+    .field select{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' fill='none' stroke-width='1.5'/%3E%3C/svg%3E") right 12px center no-repeat #fff;padding-right:32px}
+
+    /* Button */
+    .btn-value{width:100%;background:linear-gradient(135deg,var(--pink) 0%,var(--pink-light) 100%);color:#fff;border:none;border-radius:12px;padding:15px;font-size:16px;font-weight:800;cursor:pointer;margin-top:4px;box-shadow:0 4px 16px rgba(228,19,132,.35);transition:transform .12s}
+    .btn-value:active{transform:scale(.98)}
+    .btn-value:disabled{opacity:.6;transform:none}
+
+    /* Loading */
+    #loading-section{display:none}
+    .spinner-wrap{padding:40px 20px;text-align:center}
+    .spinner{width:48px;height:48px;border:4px solid #e0e4ec;border-top-color:var(--pink);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-text{color:var(--muted);font-size:14px;line-height:1.6}
+    .loading-text strong{color:var(--text)}
+
+    /* Result */
+    #result-section{display:none}
+    .result-hero{background:linear-gradient(135deg,var(--teal) 0%,var(--teal-light) 100%);padding:26px 20px;text-align:center;color:#fff}
+    .result-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;opacity:.85;margin-bottom:4px}
+    .result-price{font-size:52px;font-weight:900;letter-spacing:-.02em;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.15)}
+    .result-car{opacity:.88;font-size:14px;margin-top:6px}
+    .result-badge{display:inline-block;background:rgba(255,255,255,.2);border-radius:16px;padding:3px 12px;font-size:11px;margin-top:8px}
+    .breakdown{padding:18px 20px 0}
+    .breakdown-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px}
+    .bd-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f0f0f0;font-size:13px;color:var(--text)}
+    .bd-row:last-child{border-bottom:none}
+    .bd-row .label{color:var(--muted)}
+    .bd-row .value{font-weight:600}
+    .bd-row.total{font-size:15px;font-weight:800;color:var(--teal);padding-top:12px;margin-top:4px}
+    .bd-row.total .label{color:var(--teal)}
+    .deduct{color:var(--pink)!important}
+    .source-row{padding:12px 20px 18px;font-size:11px;color:var(--muted)}
+    .source-row a{color:var(--teal);text-decoration:none;font-weight:600}
+    .btn-reset{width:calc(100% - 40px);margin:0 20px 20px;background:#f5f7fa;color:var(--dark);border:1.5px solid #e0e4ec;border-radius:10px;padding:11px;font-size:14px;font-weight:700;cursor:pointer}
+    .btn-reset:active{background:#e8ecf4}
+
+    /* Error */
+    .error-box{background:#fff0f4;border:1.5px solid #ffb3cc;border-radius:10px;padding:12px 14px;font-size:13px;color:#b0003a;margin-top:12px;display:none}
+    .error-box a{color:var(--teal);font-weight:700;text-decoration:none}
+
+    footer{text-align:center;padding:16px;color:var(--muted);font-size:11px}
+
+    /* Safe area for iPhone notch */
+    @supports(padding:env(safe-area-inset-top)){
+      header{padding-top:calc(14px + env(safe-area-inset-top))}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-badge">BKJ</div>
+    <span class="logo-text">Valuation <span>Tool</span></span>
+  </div>
+  <div class="header-tag">Trade-In Pricing</div>
+</header>
+
+<div class="hero">
+  <h1>Instant Trade-In Valuation</h1>
+  <p>Select the car details to get your offer in seconds</p>
+</div>
+
+<div class="container">
+  <div class="card">
+    <div class="card-header">
+      <span class="card-header-icon">🔍</span>
+      <h2>Enter Vehicle Details</h2>
+    </div>
+
+    <!-- FORM -->
+    <div class="card-body" id="form-section">
+      <div class="plate-label">Irish Registration Plate</div>
+      <div class="plate-wrapper">
+        <div class="plate">
+          <div class="plate-eu">
+            <div class="flag"><div class="flag-green"></div><div class="flag-white"></div><div class="flag-orange"></div></div>
+            <div class="irl">IRL</div>
+          </div>
+          <input type="text" id="reg" class="plate-input-field" placeholder="21·D·12345" maxlength="14" autocomplete="off" spellcheck="false"/>
+        </div>
+      </div>
+
+      <div class="fields-grid">
+        <div class="field">
+          <label>Make</label>
+          <select id="make" onchange="updateModels()">
+            <option value="">— Select —</option>
+            <option>Audi</option><option>BMW</option><option>Citroën</option><option>Ford</option>
+            <option>Honda</option><option>Hyundai</option><option>Jaguar</option><option>Jeep</option>
+            <option>Kia</option><option>Land Rover</option><option>Mazda</option><option>Mercedes-Benz</option>
+            <option>Nissan</option><option>Opel</option><option>Peugeot</option><option>Porsche</option>
+            <option>Renault</option><option>SEAT</option><option>Skoda</option><option>Suzuki</option>
+            <option>Tesla</option><option>Toyota</option><option>Volkswagen</option><option>Volvo</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Model</label>
+          <select id="model"><option value="">— Select Make —</option></select>
+        </div>
+        <div class="field">
+          <label>Year</label>
+          <input type="number" id="year" placeholder="e.g. 2021" min="2005" max="2026" inputmode="numeric"/>
+        </div>
+        <div class="field">
+          <label>Mileage (km)</label>
+          <input type="number" id="mileage" placeholder="e.g. 60000" min="0" inputmode="numeric"/>
+        </div>
+      </div>
+
+      <div id="error-box" class="error-box"></div>
+      <button class="btn-value" id="val-btn" onclick="startValuation()">💰 Get Trade-In Value</button>
+    </div>
+
+    <!-- LOADING -->
+    <div id="loading-section">
+      <div class="card-header" style="background:linear-gradient(90deg,var(--pink),var(--pink-light))">
+        <span class="card-header-icon">⏳</span>
+        <h2>Searching Carzone.ie...</h2>
+      </div>
+      <div class="spinner-wrap">
+        <div class="spinner"></div>
+        <div class="loading-text">
+          Finding the <strong>lowest dealer price</strong><br/>
+          <span id="loading-sub" style="font-size:12px;color:#999;"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div id="result-section">
+      <div class="result-hero">
+        <div class="result-label">Trade-In Offer</div>
+        <div class="result-price" id="res-offer">€0</div>
+        <div class="result-car" id="res-car"></div>
+        <div class="result-badge" id="res-badge"></div>
+      </div>
+      <div class="breakdown">
+        <div class="breakdown-title">How we calculated this</div>
+        <div class="bd-row">
+          <span class="label">Lowest dealer price</span>
+          <span class="value" id="bd-dealer">€0</span>
+        </div>
+        <div class="bd-row">
+          <span class="label">Listing</span>
+          <span class="value" id="bd-listing" style="font-size:12px;color:#555;text-align:right;max-width:60%"></span>
+        </div>
+        <div class="bd-row">
+          <span class="label">Deduction</span>
+          <span class="value deduct">− €4,000</span>
+        </div>
+        <div class="bd-row total">
+          <span class="label">Your offer to customer</span>
+          <span class="value" id="bd-offer">€0</span>
+        </div>
+      </div>
+      <div class="source-row">
+        🔗 <a id="carzone-link" href="#" target="_blank">View on Carzone.ie</a> — <span id="res-year-make"></span>, max <span id="res-max-km"></span> km
+      </div>
+      <button class="btn-reset" onclick="resetApp()">← Value Another Car</button>
+    </div>
+  </div>
+</div>
+
+<footer>BKJ Valuation Tool · Powered by Carzone.ie market data</footer>
+
+<script>
+  function fmt(n){return '€'+Math.round(n).toLocaleString('en-IE')}
+
+  function showError(msg){const b=document.getElementById('error-box');b.innerHTML=msg;b.style.display='block'}
+  function clearError(){document.getElementById('error-box').style.display='none'}
+
+  async function startValuation(){
+    clearError();
+    const reg=document.getElementById('reg').value.trim();
+    const make=document.getElementById('make').value;
+    const model=document.getElementById('model').value;
+    const year=document.getElementById('year').value;
+    const mileage=document.getElementById('mileage').value;
+
+    if(!make||!model||!year||!mileage||parseInt(mileage)<=0){
+      showError('⚠️ Please select Make, Model, Year and enter Mileage.');return;
+    }
+
+    document.getElementById('form-section').style.display='none';
+    document.getElementById('loading-section').style.display='block';
+    document.getElementById('loading-sub').textContent=
+      `${year} ${make} ${model} · Max ${(parseInt(mileage)+20000).toLocaleString('en-IE')} km · Dealers only`;
+
+    try{
+      const params=new URLSearchParams({make,model,year,mileage});
+      const resp=await fetch(`/api/valuation?${params}`);
+      const data=await resp.json();
+
+      document.getElementById('loading-section').style.display='none';
+
+      if(data.success){
+        const maxMileage=parseInt(mileage)+20000;
+        document.getElementById('res-offer').textContent=fmt(data.offer);
+        document.getElementById('res-car').textContent=
+          `${year} ${make} ${model}${reg?' · '+reg.toUpperCase():''}`;
+        document.getElementById('res-badge').textContent=
+          `${parseInt(mileage).toLocaleString('en-IE')} km · Trade-in offer`;
+        document.getElementById('bd-dealer').textContent=fmt(data.dealer_price);
+        document.getElementById('bd-listing').innerHTML=
+          data.listing_name+(data.listing_km?`<br><small>${parseInt(data.listing_km).toLocaleString('en-IE')} km</small>`:'');
+        document.getElementById('bd-offer').textContent=fmt(data.offer);
+        document.getElementById('res-year-make').textContent=`${year} ${make} ${model}`;
+        document.getElementById('res-max-km').textContent=maxMileage.toLocaleString('en-IE');
+        document.getElementById('carzone-link').href=data.carzone_url;
+        document.getElementById('result-section').style.display='block';
+      } else {
+        document.getElementById('form-section').style.display='block';
+        showError(
+          `⚠️ ${data.error||'Could not find matching listings.'}<br>`+
+          `<a href="${data.carzone_url}" target="_blank">Check Carzone manually →</a>`
+        );
+      }
+    }catch(e){
+      document.getElementById('loading-section').style.display='none';
+      document.getElementById('form-section').style.display='block';
+      showError('⚠️ Network error — please check your connection and try again.');
+    }
+  }
+
+  function resetApp(){
+    document.getElementById('form-section').style.display='block';
+    document.getElementById('result-section').style.display='none';
+    document.getElementById('loading-section').style.display='none';
+    clearError();
+  }
+
+  document.getElementById('reg').addEventListener('input',function(){this.value=this.value.toUpperCase()});
+
+  const MODELS={
+    'Audi':['A1','A3','A4','A5','A6','A7','A8','Q2','Q3','Q5','Q7','Q8','TT','e-tron','e-tron GT'],
+    'BMW':['1 Series','2 Series','3 Series','4 Series','5 Series','6 Series','7 Series','8 Series','X1','X2','X3','X4','X5','X6','X7','iX','i3','i4','i5','M3','M4','M5'],
+    'Citroën':['C1','C3','C4','C5','C3 Aircross','C5 Aircross','Berlingo','DS3','DS4','DS5'],
+    'Ford':['Fiesta','Focus','Puma','Kuga','EcoSport','Edge','Mondeo','Galaxy','S-Max','Mustang','Mustang Mach-E','Explorer','Transit','Ranger'],
+    'Honda':['Jazz','Civic','CR-V','HR-V','Accord','e'],
+    'Hyundai':['i10','i20','i30','i40','Tucson','Santa Fe','Kona','Ioniq','Ioniq 5','Ioniq 6'],
+    'Jaguar':['E-Pace','F-Pace','I-Pace','XE','XF','XJ','F-Type'],
+    'Jeep':['Renegade','Compass','Cherokee','Grand Cherokee','Wrangler','Avenger'],
+    'Kia':['Picanto','Rio','Ceed','Pro Ceed','Sportage','Sorento','Stonic','Niro','Soul','EV6','EV9'],
+    'Land Rover':['Defender','Discovery','Discovery Sport','Freelander','Range Rover','Range Rover Sport','Range Rover Evoque','Range Rover Velar'],
+    'Mazda':['Mazda2','Mazda3','Mazda6','CX-3','CX-30','CX-5','CX-60','MX-5','MX-30'],
+    'Mercedes-Benz':['A-Class','B-Class','C-Class','E-Class','S-Class','CLA','CLS','GLA','GLB','GLC','GLE','GLS','G-Class','EQA','EQB','EQC','EQE','EQS'],
+    'Nissan':['Micra','Note','Juke','Qashqai','X-Trail','Leaf','Ariya','Pulsar','Navara'],
+    'Opel':['Corsa','Astra','Mokka','Crossland','Grandland','Insignia','Zafira'],
+    'Peugeot':['108','208','308','508','2008','3008','5008','e-208','e-2008','Rifter'],
+    'Porsche':['911','Boxster','Cayman','Cayenne','Macan','Panamera','Taycan'],
+    'Renault':['Clio','Megane','Captur','Kadjar','Koleos','Scenic','Zoe','Arkana','Austral'],
+    'SEAT':['Ibiza','Leon','Arona','Ateca','Tarraco'],
+    'Skoda':['Fabia','Octavia','Superb','Kodiaq','Karoq','Scala','Kamiq','Enyaq'],
+    'Suzuki':['Swift','Vitara','SX4 S-Cross','Ignis','Jimny'],
+    'Tesla':['Model 3','Model Y','Model S','Model X','Cybertruck'],
+    'Toyota':['Yaris','Corolla','Camry','Auris','Avensis','RAV4','CH-R','Land Cruiser','Prius','Highlander','Aygo','Aygo X'],
+    'Volkswagen':['Polo','Golf','Passat','Arteon','Tiguan','T-Cross','T-Roc','Touareg','Touran','ID.3','ID.4','ID.5','ID.7','Caddy','Transporter'],
+    'Volvo':['XC40','XC60','XC90','S60','S90','V40','V60','V90','C40','EX30','EX90'],
+  };
+
+  function updateModels(){
+    const make=document.getElementById('make').value;
+    const sel=document.getElementById('model');
+    sel.innerHTML='';
+    if(!make||!MODELS[make]){sel.innerHTML='<option value="">— Select Make —</option>';return}
+    sel.innerHTML='<option value="">— Select Model —</option>';
+    MODELS[make].forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o)});
+  }
+</script>
+</body>
+</html>
