@@ -1,100 +1,73 @@
 """
-BKJ Valuation Tool — Backend Server
-Automatically fetches the lowest dealer price from Carzone.ie
+BKJ Valuation Tool â Backend Server
+Automatically fetches the lowest dealer price from Carzone.ie REST API
 """
 
 from flask import Flask, render_template, jsonify, request
 import cloudscraper
-from bs4 import BeautifulSoup
-import json, re, os
+import os
 
 app = Flask(__name__)
 scraper = cloudscraper.create_scraper(browser={"browser": "chrome", "platform": "darwin"})
 
-# ── Carzone Scraper ──────────────────────────────────────────
+# ââ Carzone REST API ââââââââââââââââââââââââââââââââââââââââââ
 def get_lowest_carzone_price(make, model, year, max_mileage):
-    """Search Carzone.ie for the cheapest dealer listing and return the price."""
-    make_enc = make.replace(" ", "%20")
-    model_enc = model.replace(" ", "%20")
-    url = (
-        f"https://www.carzone.ie/search?make={make_enc}&model={model_enc}"
-        f"&minYear={year}&maxYear={year}&maxMileage={max_mileage}"
-        f"&sellerType=Trade&sort=PriceAsc"
+    """Call Carzone's internal REST API to get the cheapest dealer listing."""
+    api_url = "https://www.carzone.ie/rest/1.0/Car/stock"
+    params = {
+        "make": make,
+        "model": model,
+        "minYear": year,
+        "maxYear": year,
+        "maxMileage": max_mileage,
+        "sellerType": "Trade",
+        "sort": "PriceAsc",
+    }
+    search_url = (
+        f"https://www.carzone.ie/search?make={make.replace(' ', '%20')}"
+        f"&model={model.replace(' ', '%20')}&minYear={year}&maxYear={year}"
+        f"&maxMileage={max_mileage}&sellerType=Trade&sort=PriceAsc"
     )
 
     try:
-        resp = scraper.get(url, timeout=15)
-        html = resp.text
+        resp = scraper.get(api_url, params=params, timeout=15)
+        data = resp.json()
     except Exception as e:
-        return None, url, str(e)
+        return None, search_url, f"Could not reach Carzone: {str(e)}"
 
-    # ── Strategy 1: JSON-LD structured data (most reliable) ──
+    # Flatten all listings from all result groups
     listings = []
-    for script in re.findall(
-        r'<script[^>]+type=["\'\']application/ld\+json["\'\'][^>]*>(.*?)</script>',
-        html, re.S
-    ):
-        try:
-            data = json.loads(script)
-            items = data if isinstance(data, list) else [data]
-            for item in items:
-                if item.get("@type") == "Car":
-                    price = float(item.get("offers", {}).get("price", 0))
-                    km = float(item.get("mileageFromOdometer", {}).get("value", 0))
-                    car_year = int(item.get("vehicleModelDate", 0))
-                    name = item.get("name", "")
-                    if (
-                        price > 1000
-                        and km <= max_mileage
-                        and car_year == int(year)
-                    ):
-                        listings.append({
-                            "price": price,
-                            "km": int(km),
-                            "name": name,
-                            "year": car_year,
-                        })
-        except Exception:
-            pass
+    for group in data.get("results", []):
+        for item in group.get("items", []):
+            summary = item.get("summary", {})
+            price_detail = summary.get("priceDetail", {})
+            vehicle = summary.get("vehicle", {})
+            search_detail = summary.get("searchDetailSummary", {})
 
-    if listings:
-        listings.sort(key=lambda x: x["price"])
-        return listings[0], url, None
+            euro_price = price_detail.get("euroPrice")
+            is_poa = price_detail.get("poa", False)
+            mileage_km = (vehicle.get("mileage") or {}).get("mileageKm")
+            mmv = search_detail.get("mmv", {})
+            derivative = mmv.get("derivative", "")
+            clean_make = mmv.get("cleanMake", make)
+            clean_model = mmv.get("cleanModel", model)
+            name = f"{clean_make} {clean_model} {derivative}".strip()
 
-    # ── Strategy 2: Regex parsing of HTML ──
-    year_str = str(year)
-    pattern = re.compile(
-        year_str + r'\s*[•·]\s*([\d,]+)\s*km[\s\S]{0,400}?€([\d,]+)', re.I
-    )
-    for m in pattern.finditer(html):
-        km = int(m.group(1).replace(",", ""))
-        price = int(m.group(2).replace(",", ""))
-        if km <= max_mileage and 1000 < price < 300000:
-            return {
-                "price": price,
-                "km": km,
-                "name": f"{year} {make} {model}",
-                "year": int(year),
-            }, url, None
+            if euro_price and not is_poa:
+                listings.append({
+                    "price": euro_price,
+                    "km": mileage_km,
+                    "name": name,
+                })
 
-    pattern2 = re.compile(
-        r'€([\d,]+)[\s\S]{0,400}?' + year_str + r'\s*[•·]\s*([\d,]+)\s*km', re.I
-    )
-    for m in pattern2.finditer(html):
-        price = int(m.group(1).replace(",", ""))
-        km = int(m.group(2).replace(",", ""))
-        if km <= max_mileage and 1000 < price < 300000:
-            return {
-                "price": price,
-                "km": km,
-                "name": f"{year} {make} {model}",
-                "year": int(year),
-            }, url, None
+    if not listings:
+        return None, search_url, "No matching listings found on Carzone.ie"
 
-    return None, url, "No matching listings found"
+    listings.sort(key=lambda x: x["price"])
+    return listings[0], search_url, None
 
 
-# ── Routes ───────────────────────────────────────────────────
+# ââ Routes âââââââââââââââââââââââââââââââââââââââââââââââââââ
 @app.route("/manifest.json")
 def manifest():
     return app.response_class(
@@ -145,7 +118,7 @@ def api_valuation():
         })
 
 
-# ── Run ──────────────────────────────────────────────────────
+# ââ Run ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
