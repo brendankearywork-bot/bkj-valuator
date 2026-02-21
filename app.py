@@ -31,7 +31,7 @@ def get_lowest_carzone_price(make, model, year, max_mileage):
     # ── Strategy 1: JSON-LD structured data (most reliable) ──
     listings = []
     for script in re.findall(
-        r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
+        r'<script[^>]+type=["\'\']application/ld\+json["\'\'][^>]*>(.*?)</script>',
         html, re.S
     ):
         try:
@@ -43,8 +43,6 @@ def get_lowest_carzone_price(make, model, year, max_mileage):
                     km = float(item.get("mileageFromOdometer", {}).get("value", 0))
                     car_year = int(item.get("vehicleModelDate", 0))
                     name = item.get("name", "")
-                    seller_type = item.get("seller", {}).get("@type", "")
-                    # Only include if within filters and from a dealer
                     if (
                         price > 1000
                         and km <= max_mileage
@@ -64,7 +62,6 @@ def get_lowest_carzone_price(make, model, year, max_mileage):
         return listings[0], url, None
 
     # ── Strategy 2: Regex parsing of HTML ──
-    # Pattern: "2021 • 72,000km" near "€22,995"
     year_str = str(year)
     pattern = re.compile(
         year_str + r'\s*[•·]\s*([\d,]+)\s*km[\s\S]{0,400}?€([\d,]+)', re.I
@@ -80,7 +77,6 @@ def get_lowest_carzone_price(make, model, year, max_mileage):
                 "year": int(year),
             }, url, None
 
-    # Also try price-first order
     pattern2 = re.compile(
         r'€([\d,]+)[\s\S]{0,400}?' + year_str + r'\s*[•·]\s*([\d,]+)\s*km', re.I
     )
@@ -99,6 +95,13 @@ def get_lowest_carzone_price(make, model, year, max_mileage):
 
 
 # ── Routes ───────────────────────────────────────────────────
+@app.route("/manifest.json")
+def manifest():
+    return app.response_class(
+        response='{"name":"BKJ Valuation Tool","short_name":"BKJ Value","start_url":"/","display":"standalone","background_color":"#F5F7FA","theme_color":"#43174A"}',
+        mimetype="application/json"
+    )
+
 @app.route("/")
 def index():
     return render_template("index.html")
