@@ -90,6 +90,13 @@
     .error-box{background:#fff0f4;border:1.5px solid #ffb3cc;border-radius:10px;padding:12px 14px;font-size:13px;color:#b0003a;margin-top:12px;display:none}
     .error-box a{color:var(--teal);font-weight:700;text-decoration:none}
 
+    /* Manual mode */
+    #manual-section{display:none}
+    .btn-carzone{display:block;width:100%;background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;text-align:center;text-decoration:none;margin-bottom:18px;box-shadow:0 4px 14px rgba(17,123,104,.3)}
+    .manual-body{padding:20px}
+    .manual-body p{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5}
+    .btn-manual-reset{width:100%;background:#f5f7fa;color:var(--dark);border:1.5px solid #e0e4ec;border-radius:10px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;margin-top:10px}
+
     footer{text-align:center;padding:16px;color:var(--muted);font-size:11px}
 
     /* Safe area for iPhone notch */
@@ -179,6 +186,25 @@
       </div>
     </div>
 
+    <!-- MANUAL FALLBACK -->
+    <div id="manual-section">
+      <div class="card-header" style="background:linear-gradient(90deg,#b06000,#e07800)">
+        <span class="card-header-icon">ð</span>
+        <h2>Look Up Price Manually</h2>
+      </div>
+      <div class="manual-body">
+        <p>Carzone's live data is temporarily unavailable. Open Carzone below, find the lowest dealer price, and enter it here â we'll calculate your offer instantly.</p>
+        <a id="carzone-manual-link" href="#" target="_blank" class="btn-carzone">ð Open Carzone Search â</a>
+        <div class="field" style="margin-bottom:14px">
+          <label>Lowest Carzone Dealer Price (â¬)</label>
+          <input type="number" id="manual-price" placeholder="e.g. 34000" min="1000" inputmode="numeric"/>
+        </div>
+        <div id="manual-error" class="error-box" style="margin-bottom:10px"></div>
+        <button class="btn-value" onclick="calcManual()">ð° Calculate My Offer</button>
+        <button class="btn-manual-reset" onclick="resetApp()">â Start Over</button>
+      </div>
+    </div>
+
     <!-- RESULT -->
     <div id="result-section">
       <div class="result-hero">
@@ -222,7 +248,7 @@
   function showError(msg){const b=document.getElementById('error-box');b.innerHTML=msg;b.style.display='block'}
   function clearError(){document.getElementById('error-box').style.display='none'}
 
-  // ââ VALUATION (calls the backend API) this is a long comment to fill
+  // ââ VALUATION (calls the backend API) ââââââââââââââââââââââ
   async function startValuation(){
     clearError();
     const reg=document.getElementById('reg').value.trim();
@@ -254,7 +280,7 @@
         document.getElementById('res-car').textContent=
           `${year} ${make} ${model}${reg?' Â· '+reg.toUpperCase():''}`;
         document.getElementById('res-badge').textContent=
-          `${parseInt(mileage).toLocaleString('en-IE')} kmâ¿ Â· Trade-in offer`;
+          `${parseInt(mileage).toLocaleString('en-IE')} km Â· Trade-in offer`;
         document.getElementById('bd-dealer').textContent=fmt(data.dealer_price);
         document.getElementById('bd-listing').innerHTML=
           data.listing_name+(data.listing_km?`<br><small>${parseInt(data.listing_km).toLocaleString('en-IE')} km</small>`:'');
@@ -264,11 +290,12 @@
         document.getElementById('carzone-link').href=data.carzone_url;
         document.getElementById('result-section').style.display='block';
       } else {
-        document.getElementById('form-section').style.display='block';
-        showError(
-          `â ï¸ ${data.error||'Could not find matching listings.'}<br>`+
-          `<a href="${data.carzone_url}" target="_blank">Check Carzone manually â</a>`
-        );
+        // Automatic lookup failed â show manual entry panel
+        window._manualMake=make; window._manualModel=model;
+        window._manualYear=year; window._manualMileage=mileage; window._manualReg=reg;
+        document.getElementById('carzone-manual-link').href=data.carzone_url||
+          `https://www.carzone.ie/search?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&minYear=${year}&maxYear=${year}&maxMileage=${parseInt(mileage)+20000}&sellerType=Trade&sort=PriceAsc`;
+        document.getElementById('manual-section').style.display='block';
       }
     }catch(e){
       document.getElementById('loading-section').style.display='none';
@@ -277,18 +304,44 @@
     }
   }
 
+  function calcManual(){
+    const price=parseInt(document.getElementById('manual-price').value);
+    const merr=document.getElementById('manual-error');
+    if(!price||price<500){merr.textContent='â ï¸ Please enter a valid price (e.g. 34000)';merr.style.display='block';return;}
+    merr.style.display='none';
+    const offer=price-4000;
+    const make=window._manualMake, model=window._manualModel, year=window._manualYear;
+    const mileage=window._manualMileage, reg=window._manualReg;
+    const maxMileage=parseInt(mileage)+20000;
+    document.getElementById('res-offer').textContent=fmt(offer);
+    document.getElementById('res-car').textContent=`${year} ${make} ${model}${reg?' Â· '+reg.toUpperCase():''}`;
+    document.getElementById('res-badge').textContent=`${parseInt(mileage).toLocaleString('en-IE')} km Â· Trade-in offer`;
+    document.getElementById('bd-dealer').textContent=fmt(price);
+    document.getElementById('bd-listing').innerHTML='From Carzone search';
+    document.getElementById('bd-offer').textContent=fmt(offer);
+    document.getElementById('res-year-make').textContent=`${year} ${make} ${model}`;
+    document.getElementById('res-max-km').textContent=maxMileage.toLocaleString('en-IE');
+    document.getElementById('carzone-link').href=document.getElementById('carzone-manual-link').href;
+    document.getElementById('manual-section').style.display='none';
+    document.getElementById('result-section').style.display='block';
+  }
+
   function resetApp(){
     document.getElementById('form-section').style.display='block';
     document.getElementById('result-section').style.display='none';
     document.getElementById('loading-section').style.display='none';
+    document.getElementById('manual-section').style.display='none';
     clearError();
   }
 
-  // ââ REG PLATE â YEAR AUTO-FILL âââ
+  // ââ REG PLATE â YEAR AUTO-FILL âââââââââââââââââââââââââââââ
   function extractYearFromReg(reg) {
-    const clean = reg.replace(/[\s.\-]/g, '').toUpperCase();
+    // Normalise: strip spaces, dots, dashes, middots
+    const clean = reg.replace(/[\s.\-Â·]/g, '').toUpperCase();
+    // 2013+ format: 3 digits then letter(s)  e.g. 211D12345 â 2021
     let m = clean.match(/^(\d{3})[A-Z]/);
     if (m) { const yy = parseInt(m[1].substring(0, 2)); return 2000 + yy; }
+    // Pre-2013: 2 digits then letter(s)  e.g. 06D12345 â 2006
     m = clean.match(/^(\d{2})[A-Z]/);
     if (m) { const yy = parseInt(m[1]); return yy >= 87 ? 1900 + yy : 2000 + yy; }
     return null;
@@ -312,10 +365,10 @@
     }
   });
 
-  // ââ DYNAMIC MODEL DROPDOWN ââ
+  // ââ DYNAMIC MODEL DROPDOWN âââââââââââââââââââââââââââââââââ
   const MODELS={
     'Audi':['A1','A3','A4','A5','A6','A7','A8','Q2','Q3','Q5','Q7','Q8','TT','e-tron','e-tron GT'],
-    'BMW':['1 Series','2 Series','3 Series','4 Series','5 Series','6 Series','7 Series','8 Series','X1','X2','X3','X4','X5','X6','X7','i','i3','i4','i5','M3','M4','M5'],
+    'BMW':['1 Series','2 Series','3 Series','4 Series','5 Series','6 Series','7 Series','8 Series','X1','X2','X3','X4','X5','X6','X7','iX','i3','i4','i5','M3','M4','M5'],
     'CitroÃ«n':['C1','C3','C4','C5','C3 Aircross','C5 Aircross','Berlingo','DS3','DS4','DS5'],
     'Ford':['Fiesta','Focus','Puma','Kuga','EcoSport','Edge','Mondeo','Galaxy','S-Max','Mustang','Mustang Mach-E','Explorer','Transit','Ranger'],
     'Honda':['Jazz','Civic','CR-V','HR-V','Accord','e'],
@@ -346,7 +399,7 @@
     sel.innerHTML='';
     if(!make||!MODELS[make]){sel.innerHTML='<option value="">â Select Make â</option>';return}
     sel.innerHTML='<option value="">â Select Model â</option>';
-    MODELS[make].forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o)});
+    MODELS[make].forEach(m=>{const l=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o)});
   }
 </script>
 </body>
