@@ -110,13 +110,13 @@
 
 <div class="hero">
   <h1>Instant Trade-In Valuation</h1>
-  <p>Select the car details to get your offer in seconds</p>
+  <p>Enter the reg plate â year fills in automatically</p>
 </div>
 
 <div class="container">
   <div class="card">
     <div class="card-header">
-      <span class="card-header-icon">🔍</span>
+      <span class="card-header-icon">ð</span>
       <h2>Enter Vehicle Details</h2>
     </div>
 
@@ -129,7 +129,7 @@
             <div class="flag"><div class="flag-green"></div><div class="flag-white"></div><div class="flag-orange"></div></div>
             <div class="irl">IRL</div>
           </div>
-          <input type="text" id="reg" class="plate-input-field" placeholder="21·D·12345" maxlength="14" autocomplete="off" spellcheck="false"/>
+          <input type="text" id="reg" class="plate-input-field" placeholder="21Â·DÂ·12345" maxlength="14" autocomplete="off" spellcheck="false"/>
         </div>
       </div>
 
@@ -137,8 +137,8 @@
         <div class="field">
           <label>Make</label>
           <select id="make" onchange="updateModels()">
-            <option value="">— Select —</option>
-            <option>Audi</option><option>BMW</option><option>Citroën</option><option>Ford</option>
+            <option value="">â Select â</option>
+            <option>Audi</option><option>BMW</option><option>CitroÃ«n</option><option>Ford</option>
             <option>Honda</option><option>Hyundai</option><option>Jaguar</option><option>Jeep</option>
             <option>Kia</option><option>Land Rover</option><option>Mazda</option><option>Mercedes-Benz</option>
             <option>Nissan</option><option>Opel</option><option>Peugeot</option><option>Porsche</option>
@@ -148,7 +148,7 @@
         </div>
         <div class="field">
           <label>Model</label>
-          <select id="model"><option value="">— Select Make —</option></select>
+          <select id="model"><option value="">â Select Make â</option></select>
         </div>
         <div class="field">
           <label>Year</label>
@@ -161,13 +161,13 @@
       </div>
 
       <div id="error-box" class="error-box"></div>
-      <button class="btn-value" id="val-btn" onclick="startValuation()">💰 Get Trade-In Value</button>
+      <button class="btn-value" id="val-btn" onclick="startValuation()">ð° Get Trade-In Value</button>
     </div>
 
     <!-- LOADING -->
     <div id="loading-section">
       <div class="card-header" style="background:linear-gradient(90deg,var(--pink),var(--pink-light))">
-        <span class="card-header-icon">⏳</span>
+        <span class="card-header-icon">â³</span>
         <h2>Searching Carzone.ie...</h2>
       </div>
       <div class="spinner-wrap">
@@ -183,7 +183,7 @@
     <div id="result-section">
       <div class="result-hero">
         <div class="result-label">Trade-In Offer</div>
-        <div class="result-price" id="res-offer">€0</div>
+        <div class="result-price" id="res-offer">â¬0</div>
         <div class="result-car" id="res-car"></div>
         <div class="result-badge" id="res-badge"></div>
       </div>
@@ -191,7 +191,7 @@
         <div class="breakdown-title">How we calculated this</div>
         <div class="bd-row">
           <span class="label">Lowest dealer price</span>
-          <span class="value" id="bd-dealer">€0</span>
+          <span class="value" id="bd-dealer">â¬0</span>
         </div>
         <div class="bd-row">
           <span class="label">Listing</span>
@@ -199,29 +199,30 @@
         </div>
         <div class="bd-row">
           <span class="label">Deduction</span>
-          <span class="value deduct">− €4,000</span>
+          <span class="value deduct">â â¬4,000</span>
         </div>
         <div class="bd-row total">
           <span class="label">Your offer to customer</span>
-          <span class="value" id="bd-offer">€0</span>
+          <span class="value" id="bd-offer">â¬0</span>
         </div>
       </div>
       <div class="source-row">
-        🔗 <a id="carzone-link" href="#" target="_blank">View on Carzone.ie</a> — <span id="res-year-make"></span>, max <span id="res-max-km"></span> km
+        ð <a id="carzone-link" href="#" target="_blank">View on Carzone.ie</a> â <span id="res-year-make"></span>, max <span id="res-max-km"></span> km
       </div>
-      <button class="btn-reset" onclick="resetApp()">← Value Another Car</button>
+      <button class="btn-reset" onclick="resetApp()">â Value Another Car</button>
     </div>
   </div>
 </div>
 
-<footer>BKJ Valuation Tool · Powered by Carzone.ie market data</footer>
+<footer>BKJ Valuation Tool Â· Powered by Carzone.ie market data</footer>
 
 <script>
-  function fmt(n){return '€'+Math.round(n).toLocaleString('en-IE')}
+  function fmt(n){return 'â¬'+Math.round(n).toLocaleString('en-IE')}
 
   function showError(msg){const b=document.getElementById('error-box');b.innerHTML=msg;b.style.display='block'}
   function clearError(){document.getElementById('error-box').style.display='none'}
 
+  // ââ VALUATION (calls the backend API) this is a long comment to fill
   async function startValuation(){
     clearError();
     const reg=document.getElementById('reg').value.trim();
@@ -231,13 +232,14 @@
     const mileage=document.getElementById('mileage').value;
 
     if(!make||!model||!year||!mileage||parseInt(mileage)<=0){
-      showError('⚠️ Please select Make, Model, Year and enter Mileage.');return;
+      showError('â ï¸ Please select Make, Model, Year and enter Mileage.');return;
     }
 
+    // Show loading
     document.getElementById('form-section').style.display='none';
     document.getElementById('loading-section').style.display='block';
     document.getElementById('loading-sub').textContent=
-      `${year} ${make} ${model} · Max ${(parseInt(mileage)+20000).toLocaleString('en-IE')} km · Dealers only`;
+      `${year} ${make} ${model} Â· Max ${(parseInt(mileage)+20000).toLocaleString('en-IE')} km Â· Dealers only`;
 
     try{
       const params=new URLSearchParams({make,model,year,mileage});
@@ -250,9 +252,9 @@
         const maxMileage=parseInt(mileage)+20000;
         document.getElementById('res-offer').textContent=fmt(data.offer);
         document.getElementById('res-car').textContent=
-          `${year} ${make} ${model}${reg?' · '+reg.toUpperCase():''}`;
+          `${year} ${make} ${model}${reg?' Â· '+reg.toUpperCase():''}`;
         document.getElementById('res-badge').textContent=
-          `${parseInt(mileage).toLocaleString('en-IE')} km · Trade-in offer`;
+          `${parseInt(mileage).toLocaleString('en-IE')} kmâ¿ Â· Trade-in offer`;
         document.getElementById('bd-dealer').textContent=fmt(data.dealer_price);
         document.getElementById('bd-listing').innerHTML=
           data.listing_name+(data.listing_km?`<br><small>${parseInt(data.listing_km).toLocaleString('en-IE')} km</small>`:'');
@@ -264,14 +266,14 @@
       } else {
         document.getElementById('form-section').style.display='block';
         showError(
-          `⚠️ ${data.error||'Could not find matching listings.'}<br>`+
-          `<a href="${data.carzone_url}" target="_blank">Check Carzone manually →</a>`
+          `â ï¸ ${data.error||'Could not find matching listings.'}<br>`+
+          `<a href="${data.carzone_url}" target="_blank">Check Carzone manually â</a>`
         );
       }
     }catch(e){
       document.getElementById('loading-section').style.display='none';
       document.getElementById('form-section').style.display='block';
-      showError('⚠️ Network error — please check your connection and try again.');
+      showError('â ï¸ Network error â please check your connection and try again.');
     }
   }
 
@@ -282,12 +284,39 @@
     clearError();
   }
 
-  document.getElementById('reg').addEventListener('input',function(){this.value=this.value.toUpperCase()});
+  // ââ REG PLATE â YEAR AUTO-FILL âââ
+  function extractYearFromReg(reg) {
+    const clean = reg.replace(/[\s.\-]/g, '').toUpperCase();
+    let m = clean.match(/^(\d{3})[A-Z]/);
+    if (m) { const yy = parseInt(m[1].substring(0, 2)); return 2000 + yy; }
+    m = clean.match(/^(\d{2})[A-Z]/);
+    if (m) { const yy = parseInt(m[1]); return yy >= 87 ? 1900 + yy : 2000 + yy; }
+    return null;
+  }
 
+  let regAutoYear = false;
+  document.getElementById('reg').addEventListener('input', function() {
+    this.value = this.value.toUpperCase();
+    const year = extractYearFromReg(this.value);
+    const yf = document.getElementById('year');
+    if (year && year >= 1990 && year <= 2026) {
+      if (!yf.value || regAutoYear) {
+        yf.value = year;
+        regAutoYear = true;
+        yf.style.borderColor = 'var(--teal)';
+        yf.style.background = '#edfaf6';
+        setTimeout(() => { yf.style.borderColor = ''; yf.style.background = ''; }, 1800);
+      }
+    } else if (!this.value && regAutoYear) {
+      yf.value = ''; regAutoYear = false;
+    }
+  });
+
+  // ââ DYNAMIC MODEL DROPDOWN ââ
   const MODELS={
     'Audi':['A1','A3','A4','A5','A6','A7','A8','Q2','Q3','Q5','Q7','Q8','TT','e-tron','e-tron GT'],
-    'BMW':['1 Series','2 Series','3 Series','4 Series','5 Series','6 Series','7 Series','8 Series','X1','X2','X3','X4','X5','X6','X7','iX','i3','i4','i5','M3','M4','M5'],
-    'Citroën':['C1','C3','C4','C5','C3 Aircross','C5 Aircross','Berlingo','DS3','DS4','DS5'],
+    'BMW':['1 Series','2 Series','3 Series','4 Series','5 Series','6 Series','7 Series','8 Series','X1','X2','X3','X4','X5','X6','X7','i','i3','i4','i5','M3','M4','M5'],
+    'CitroÃ«n':['C1','C3','C4','C5','C3 Aircross','C5 Aircross','Berlingo','DS3','DS4','DS5'],
     'Ford':['Fiesta','Focus','Puma','Kuga','EcoSport','Edge','Mondeo','Galaxy','S-Max','Mustang','Mustang Mach-E','Explorer','Transit','Ranger'],
     'Honda':['Jazz','Civic','CR-V','HR-V','Accord','e'],
     'Hyundai':['i10','i20','i30','i40','Tucson','Santa Fe','Kona','Ioniq','Ioniq 5','Ioniq 6'],
@@ -315,8 +344,8 @@
     const make=document.getElementById('make').value;
     const sel=document.getElementById('model');
     sel.innerHTML='';
-    if(!make||!MODELS[make]){sel.innerHTML='<option value="">— Select Make —</option>';return}
-    sel.innerHTML='<option value="">— Select Model —</option>';
+    if(!make||!MODELS[make]){sel.innerHTML='<option value="">â Select Make â</option>';return}
+    sel.innerHTML='<option value="">â Select Model â</option>';
     MODELS[make].forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o)});
   }
 </script>
